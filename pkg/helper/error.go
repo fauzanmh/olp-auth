@@ -32,6 +32,7 @@ var commonErrorMap = map[error]int{
 	constant.ErrorMysqlUserNotFound:      http.StatusNotFound,
 	constant.ErrorMysqlDataNotFound:      http.StatusBadRequest,
 	constant.ErrorMessageUsernameUnique:  http.StatusBadRequest,
+	constant.ErrorMessageLogin:           http.StatusBadRequest,
 }
 
 // CommonError is
@@ -45,6 +46,8 @@ func CommonError(err error) (int, error) {
 		return commonErrorMap[constant.ErrorMysqlDataNotFound], constant.ErrorMysqlDataNotFound
 	case constant.ErrorMessageUsernameUnique:
 		return commonErrorMap[constant.ErrorMessageUsernameUnique], constant.ErrorMessageUsernameUnique
+	case constant.ErrorMessageLogin:
+		return commonErrorMap[constant.ErrorMessageLogin], constant.ErrorMessageLogin
 	}
 
 	return http.StatusInternalServerError, fmt.Errorf("internal error")

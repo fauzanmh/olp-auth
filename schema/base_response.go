@@ -9,3 +9,8 @@ type Base struct {
 	Timestamp  time.Time   `json:"timestamp"`
 	Data       interface{} `json:"data"`
 }
+
+type Token struct {
+	Token     string `json:"token"`
+	ExpiresAt int64  `json:"expires_at"`
+}

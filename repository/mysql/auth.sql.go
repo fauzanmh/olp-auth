@@ -2,7 +2,9 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 
+	"github.com/fauzanmh/olp-auth/constant"
 	"github.com/fauzanmh/olp-auth/entity"
 )
 
@@ -52,4 +54,36 @@ WHERE member_id = ?
 func (q *Queries) DeleteUser(ctx context.Context, arg *entity.DeleteUserParams) error {
 	_, err := q.exec(ctx, q.deleteUserStmt, deleteUser, arg.DeletedAt, arg.MemberID)
 	return err
+}
+
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT id, username, password FROM users
+WHERE username = ? AND deleted_at IS NULL
+`
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (entity.GetUserByUsernameRow, error) {
+	row := q.queryRow(ctx, q.getUserByUsernameStmt, getUserByUsername, username)
+	var i entity.GetUserByUsernameRow
+	err := row.Scan(&i.ID, &i.Username, &i.Password)
+	if err == sql.ErrNoRows {
+		err = constant.ErrorMessageLogin
+	}
+
+	return i, err
+}
+
+const getAdminByUsername = `-- name: GetAdminByUsername :one
+SELECT id, username, password FROM admins
+WHERE username = ? AND deleted_at IS NULL
+`
+
+func (q *Queries) GetAdminByUsername(ctx context.Context, username string) (entity.GetAdminByUsernameRow, error) {
+	row := q.queryRow(ctx, q.getAdminByUsernameStmt, getAdminByUsername, username)
+	var i entity.GetAdminByUsernameRow
+	err := row.Scan(&i.ID, &i.Username, &i.Password)
+	if err == sql.ErrNoRows {
+		err = constant.ErrorMessageLogin
+	}
+
+	return i, err
 }

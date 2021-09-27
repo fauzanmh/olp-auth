@@ -32,6 +32,12 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deleteUserStmt, err = db.PrepareContext(ctx, deleteUser); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUser: %w", err)
 	}
+	if q.getAdminByUsernameStmt, err = db.PrepareContext(ctx, getAdminByUsername); err != nil {
+		return nil, fmt.Errorf("error preparing query GetAdminByUsername: %w", err)
+	}
+	if q.getUserByUsernameStmt, err = db.PrepareContext(ctx, getUserByUsername); err != nil {
+		return nil, fmt.Errorf("error preparing query GetUserByUsername: %w", err)
+	}
 	return &q, nil
 }
 
@@ -55,6 +61,16 @@ func (q *Queries) Close() error {
 	if q.deleteUserStmt != nil {
 		if cerr := q.deleteUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteUserStmt: %w", cerr)
+		}
+	}
+	if q.getAdminByUsernameStmt != nil {
+		if cerr := q.getAdminByUsernameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getAdminByUsernameStmt: %w", cerr)
+		}
+	}
+	if q.getUserByUsernameStmt != nil {
+		if cerr := q.getUserByUsernameStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getUserByUsernameStmt: %w", cerr)
 		}
 	}
 	return err
@@ -94,21 +110,25 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                DBTX
-	tx                *sql.Tx
-	checkUserStmt     *sql.Stmt
-	checkUsernameStmt *sql.Stmt
-	createUserStmt    *sql.Stmt
-	deleteUserStmt    *sql.Stmt
+	db                     DBTX
+	tx                     *sql.Tx
+	checkUserStmt          *sql.Stmt
+	checkUsernameStmt      *sql.Stmt
+	createUserStmt         *sql.Stmt
+	deleteUserStmt         *sql.Stmt
+	getAdminByUsernameStmt *sql.Stmt
+	getUserByUsernameStmt  *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                tx,
-		tx:                tx,
-		checkUserStmt:     q.checkUserStmt,
-		checkUsernameStmt: q.checkUsernameStmt,
-		createUserStmt:    q.createUserStmt,
-		deleteUserStmt:    q.deleteUserStmt,
+		db:                     tx,
+		tx:                     tx,
+		checkUserStmt:          q.checkUserStmt,
+		checkUsernameStmt:      q.checkUsernameStmt,
+		createUserStmt:         q.createUserStmt,
+		deleteUserStmt:         q.deleteUserStmt,
+		getAdminByUsernameStmt: q.getAdminByUsernameStmt,
+		getUserByUsernameStmt:  q.getUserByUsernameStmt,
 	}
 }

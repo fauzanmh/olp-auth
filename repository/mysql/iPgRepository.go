@@ -13,6 +13,8 @@ type Repository interface {
 	CheckUsername(ctx context.Context, username string) (bool, error)
 	CreateUser(ctx context.Context, arg *entity.CreateUserParams) (err error)
 	DeleteUser(ctx context.Context, arg *entity.DeleteUserParams) error
+	GetAdminByUsername(ctx context.Context, username string) (entity.GetAdminByUsernameRow, error)
+	GetUserByUsername(ctx context.Context, username string) (entity.GetUserByUsernameRow, error)
 
 	//Tx
 	BeginTx(ctx context.Context) (*sql.Tx, error)
