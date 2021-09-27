@@ -6,7 +6,7 @@ Untuk repo ini digunakan sebagai microservice authentication, terdapat fitur log
 ### Pertama 
 Jalankan perintah dibawah ini pada cmd:
 
-	go get -tags 'mysql' github.com/golang-migrate/migrate/v4/cmd/migrate@latest && \
+	go install -tags 'mysql' github.com/golang-migrate/migrate/v4/cmd/migrate@latest && \
 	go get -u github.com/swaggo/swag/cmd/swag && go get -u github.com/cosmtrek/air && \
 	go mod vendor && swag init
 atau ketikkan (menggunakan make file)
