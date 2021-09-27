@@ -20,3 +20,8 @@ type CreateUserParams struct {
 	CreatedAt int64         `json:"created_at"`
 	UpdatedAt sql.NullInt64 `json:"updated_at"`
 }
+
+type DeleteUserParams struct {
+	DeletedAt sql.NullInt64 `json:"deleted_at"`
+	MemberID  int64         `json:"member_id"`
+}

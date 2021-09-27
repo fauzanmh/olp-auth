@@ -58,3 +58,28 @@ func (u *usecase) CreateUser(ctx context.Context, req *auth.CreateUserRequest) (
 
 	return
 }
+
+// --- delete user --- //
+func (u *usecase) DeleteUser(ctx context.Context, req *auth.DeleteUserRequest) (err error) {
+	// check user is exists
+	exist, err := u.mysqlRepo.CheckUser(ctx, req.MemberID)
+	if err != nil {
+		return
+	}
+	if !exist {
+		err = constant.ErrorMessageUserNotFound
+		return
+	}
+
+	// delete user from database
+	deleteUserParams := &entity.DeleteUserParams{
+		MemberID:  req.MemberID,
+		DeletedAt: sql.NullInt64{Int64: time.Now().Unix(), Valid: true},
+	}
+	err = u.mysqlRepo.DeleteUser(ctx, deleteUserParams)
+	if err != nil {
+		return
+	}
+
+	return
+}
