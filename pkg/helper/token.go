@@ -35,7 +35,7 @@ func GenerateToken(username string) (token *schema.Token, err error) {
 
 // GenerateJWT is
 func GenerateJWT(username string) (signedToken string, expiresAt int64, err error) {
-	exp := time.Now().UTC().Add(viper.GetDuration("auth.access_token_expiry"))
+	exp := time.Now().UTC().Add(viper.GetDuration("auth.token_expires"))
 	claims := object.CustomClaims{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{

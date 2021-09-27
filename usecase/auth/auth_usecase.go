@@ -12,7 +12,6 @@ import (
 	"github.com/fauzanmh/olp-auth/pkg/util"
 	mysqlRepo "github.com/fauzanmh/olp-auth/repository/mysql"
 	"github.com/fauzanmh/olp-auth/schema/auth"
-	"go.uber.org/zap"
 )
 
 type usecase struct {
@@ -96,7 +95,6 @@ func (u *usecase) Login(ctx context.Context, req *auth.LoginRequest) (res auth.L
 		}
 		password = admin.Password
 	} else {
-		zap.S().Error("oke")
 		user, err := u.mysqlRepo.GetUserByUsername(ctx, req.Username)
 		if err != nil {
 			return res, err
