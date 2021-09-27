@@ -45,6 +45,7 @@ func (u *usecase) CreateUser(ctx context.Context, req *auth.CreateUserRequest) (
 	createUserParams := &entity.CreateUserParams{
 		Username:  req.Username,
 		Password:  password,
+		MemberID:  req.MemberID,
 		CreatedAt: time.Now().Unix(),
 		UpdatedAt: sql.NullInt64{Int64: time.Now().Unix(), Valid: true},
 	}

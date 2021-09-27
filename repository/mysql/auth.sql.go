@@ -18,14 +18,15 @@ func (q *Queries) CheckUsername(ctx context.Context, username string) (bool, err
 }
 
 const createUser = `-- name: CreateUser :exec
-INSERT INTO users (username, password, created_at, updated_at)
-VALUES (?, ?, ?, ?)
+INSERT INTO users (username, password, member_id, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?)
 `
 
 func (q *Queries) CreateUser(ctx context.Context, arg *entity.CreateUserParams) error {
 	_, err := q.exec(ctx, q.createUserStmt, createUser,
 		arg.Username,
 		arg.Password,
+		arg.MemberID,
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)

@@ -16,6 +16,7 @@ type User struct {
 type CreateUserParams struct {
 	Username  string        `json:"username"`
 	Password  string        `json:"password"`
+	MemberID  int64         `json:"member_id"`
 	CreatedAt int64         `json:"created_at"`
 	UpdatedAt sql.NullInt64 `json:"updated_at"`
 }
