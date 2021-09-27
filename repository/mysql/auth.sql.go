@@ -6,6 +6,17 @@ import (
 	"github.com/fauzanmh/olp-auth/entity"
 )
 
+const checkUser = `-- name: CheckUser :one
+SELECT EXISTS(SELECT 1 FROM users WHERE member_id = ? LIMIT 1) AS exist
+`
+
+func (q *Queries) CheckUser(ctx context.Context, memberID int64) (bool, error) {
+	row := q.queryRow(ctx, q.checkUserStmt, checkUser, memberID)
+	var exist bool
+	err := row.Scan(&exist)
+	return exist, err
+}
+
 const checkUsername = `-- name: CheckUsername :one
 SELECT EXISTS(SELECT 1 FROM users WHERE username = ? LIMIT 1) AS exist
 `
@@ -30,5 +41,15 @@ func (q *Queries) CreateUser(ctx context.Context, arg *entity.CreateUserParams) 
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
+	return err
+}
+
+const deleteUser = `-- name: DeleteUser :exec
+UPDATE users SET deleted_at = ? 
+WHERE member_id = ?
+`
+
+func (q *Queries) DeleteUser(ctx context.Context, arg *entity.DeleteUserParams) error {
+	_, err := q.exec(ctx, q.deleteUserStmt, deleteUser, arg.DeletedAt, arg.MemberID)
 	return err
 }

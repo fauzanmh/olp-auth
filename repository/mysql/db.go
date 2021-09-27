@@ -20,17 +20,28 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.checkUserStmt, err = db.PrepareContext(ctx, checkUser); err != nil {
+		return nil, fmt.Errorf("error preparing query CheckUser: %w", err)
+	}
 	if q.checkUsernameStmt, err = db.PrepareContext(ctx, checkUsername); err != nil {
 		return nil, fmt.Errorf("error preparing query CheckUsername: %w", err)
 	}
 	if q.createUserStmt, err = db.PrepareContext(ctx, createUser); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUser: %w", err)
 	}
+	if q.deleteUserStmt, err = db.PrepareContext(ctx, deleteUser); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteUser: %w", err)
+	}
 	return &q, nil
 }
 
 func (q *Queries) Close() error {
 	var err error
+	if q.checkUserStmt != nil {
+		if cerr := q.checkUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing checkUserStmt: %w", cerr)
+		}
+	}
 	if q.checkUsernameStmt != nil {
 		if cerr := q.checkUsernameStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing checkUsernameStmt: %w", cerr)
@@ -39,6 +50,11 @@ func (q *Queries) Close() error {
 	if q.createUserStmt != nil {
 		if cerr := q.createUserStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createUserStmt: %w", cerr)
+		}
+	}
+	if q.deleteUserStmt != nil {
+		if cerr := q.deleteUserStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteUserStmt: %w", cerr)
 		}
 	}
 	return err
@@ -80,15 +96,19 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 type Queries struct {
 	db                DBTX
 	tx                *sql.Tx
+	checkUserStmt     *sql.Stmt
 	checkUsernameStmt *sql.Stmt
 	createUserStmt    *sql.Stmt
+	deleteUserStmt    *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
 		db:                tx,
 		tx:                tx,
+		checkUserStmt:     q.checkUserStmt,
 		checkUsernameStmt: q.checkUsernameStmt,
 		createUserStmt:    q.createUserStmt,
+		deleteUserStmt:    q.deleteUserStmt,
 	}
 }
