@@ -35,12 +35,6 @@ https://github.com/fauzanmh/olp-migration-auth
 ### Cara Menjalankan
 Jalankan perintah dibawah ini pada cmd:
 
-    cd .. && go get -tags 'mysql' github.com/golang-migrate/migrate/v4/cmd/migrate@latest && \
-    go get -u github.com/swaggo/swag/cmd/swag && go get -u github.com/cosmtrek/air && \
-    go get github.com/vektra/mockery/v2/.../ && \
-    cd ${PROJECT_NAME} && swag init
-atau ketikkan (menggunakan make file)
-
     make run
 
 
