@@ -25,3 +25,9 @@ type DeleteUserParams struct {
 	DeletedAt sql.NullInt64 `json:"deleted_at"`
 	MemberID  int64         `json:"member_id"`
 }
+
+type GetUserByUsernameRow struct {
+	ID       int64  `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}

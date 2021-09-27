@@ -8,9 +8,11 @@ import (
 	"github.com/fauzanmh/olp-auth/constant"
 	"github.com/fauzanmh/olp-auth/entity"
 	appInit "github.com/fauzanmh/olp-auth/init"
+	"github.com/fauzanmh/olp-auth/pkg/helper"
 	"github.com/fauzanmh/olp-auth/pkg/util"
 	mysqlRepo "github.com/fauzanmh/olp-auth/repository/mysql"
 	"github.com/fauzanmh/olp-auth/schema/auth"
+	"go.uber.org/zap"
 )
 
 type usecase struct {
@@ -79,6 +81,46 @@ func (u *usecase) DeleteUser(ctx context.Context, req *auth.DeleteUserRequest) (
 	err = u.mysqlRepo.DeleteUser(ctx, deleteUserParams)
 	if err != nil {
 		return
+	}
+
+	return
+}
+
+// --- login --- //
+func (u *usecase) Login(ctx context.Context, req *auth.LoginRequest) (res auth.LoginResponse, err error) {
+	password := ""
+	if req.Provider == "admin" {
+		admin, err := u.mysqlRepo.GetAdminByUsername(ctx, req.Username)
+		if err != nil {
+			return res, err
+		}
+		password = admin.Password
+	} else {
+		zap.S().Error("oke")
+		user, err := u.mysqlRepo.GetUserByUsername(ctx, req.Username)
+		if err != nil {
+			return res, err
+		}
+		password = user.Password
+	}
+
+	// Compare between user's password and stored password
+	err = util.ComparePassword(req.Password, password)
+	if err != nil {
+		err = constant.ErrorMessageLogin
+		return
+	}
+
+	// Create JWT
+	token, err := helper.GenerateToken(req.Username)
+	if err != nil {
+		return
+	}
+
+	// Format response
+	res = auth.LoginResponse{
+		Token:     token.Token,
+		ExpiresAt: token.ExpiresAt,
 	}
 
 	return

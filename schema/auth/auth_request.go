@@ -9,3 +9,9 @@ type CreateUserRequest struct {
 type DeleteUserRequest struct {
 	MemberID int64 `param:"member_id"`
 }
+
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Provider string `json:"provider"`
+}
